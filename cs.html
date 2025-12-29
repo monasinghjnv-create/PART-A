@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Communication Skills Quiz - Class X IT</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+}
+.header {
+    text-align: center;
+    color: #003366;
+    margin-bottom: 15px;
+}
+.instructions {
+    background: #f0f8ff;
+    padding: 12px;
+    border-left: 5px solid #003366;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+.timer {
+    color: red;
+    font-weight: bold;
+}
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin: 10px 5px;
+}
+.correct {
+    color: green;
+    font-weight: bold;
+}
+.wrong {
+    color: red;
+    font-weight: bold;
+}
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- FIXED HEADING (SHOWN ONLY ONCE) -->
+<div class="header">
+    <h1>BR DAV PUBLIC SCHOOL RTS BEGUSARAI</h1>
+    <h4>Created by : Mona Kumari</h4>
+    <h3>Class X – IT (402) : Communication Skills</h3>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instructions">
+• Your score will be displayed after attempting the 10 questions.<br>
+• After attempting all 100 questions, your final score will be displayed.
+</div>
+
+<p><b>Question <span id="qno"></span> / 100</b></p>
+<p class="timer">Time Left: <span id="time">20</span> seconds</p>
+
+<p id="question"></p>
+<div id="options"></div>
+
+<button onclick="skipQ()">Skip</button>
+<button onclick="nextQ()">Next</button>
+
+<h3 id="pageScore" class="hidden"></h3>
+<h3 id="finalScore" class="hidden"></h3>
+
+</div>
+
+<script>
+// 10 syllabus-based questions
+const baseQuestions = [
+{q:"Communication is the process of:",o:["Exchanging information","Talking only","Writing only","Listening only"],a:0},
+{q:"Which is verbal communication?",o:["Gesture","Letter","Facial expression","Posture"],a:1},
+{q:"Which is non-verbal communication?",o:["Email","Phone call","Body language","Letter"],a:2},
+{q:"Sender of a message is called:",o:["Receiver","Encoder","Channel","Feedback"],a:1},
+{q:"Response given by receiver is called:",o:["Noise","Sender","Feedback","Message"],a:2},
+{q:"Which is a barrier to communication?",o:["Feedback","Noise","Clarity","Listening"],a:1},
+{q:"Formal communication is:",o:["Planned","Gossip","Rumour","Casual"],a:0},
+{q:"Informal communication is known as:",o:["Notice","Memo","Grapevine","Circular"],a:2},
+{q:"Eye contact mainly shows:",o:["Confidence","Fear","Anger","Silence"],a:0},
+{q:"Active listening means:",o:["Interrupting","Ignoring","Understanding fully","Hearing only"],a:2}
+];
+
+// Generate 100 MCQs
+let quiz = [];
+while (quiz.length < 100) {
+    quiz = quiz.concat(JSON.parse(JSON.stringify(baseQuestions)));
+}
+quiz = quiz.slice(0,100);
+
+let index = 0, score = 0, pageScore = 0;
+let time = 20, timer;
+let answered = false;
+
+function loadQ() {
+
+    // Show page score after every 10 questions
+    if (index % 10 === 0 && index !== 0) {
+        document.getElementById("pageScore").classList.remove("hidden");
+        document.getElementById("pageScore").innerHTML =
+        "Page Score: " + pageScore + " / 10";
+        pageScore = 0;
+        return;
+    }
+
+    // Show final score
+    if (index >= quiz.length) {
+        document.getElementById("finalScore").classList.remove("hidden");
+        document.getElementById("finalScore").innerHTML =
+        "Final Score: " + score + " / 100";
+        return;
+    }
+
+    answered = false;
+    document.getElementById("pageScore").classList.add("hidden");
+
+    document.getElementById("qno").innerText = index + 1;
+    document.getElementById("question").innerText = quiz[index].q;
+
+    let optHTML = "";
+    quiz[index].o.forEach((v,i)=>{
+        optHTML += `
+        <div>
+            <input type="radio" name="op" onclick="checkAns(${i})">
+            <span id="opt${i}">${v}</span>
+        </div>`;
+    });
+    document.getElementById("options").innerHTML = optHTML;
+
+    resetTimer();
+}
+
+function checkAns(val) {
+    if (answered) return;
+    answered = true;
+
+    let correct = quiz[index].a;
+    document.getElementById("opt"+correct).className = "correct";
+
+    if (val === correct) {
+        score++;
+        pageScore++;
+    } else {
+        document.getElementById("opt"+val).className = "wrong";
+    }
+}
+
+function nextQ() {
+    clearInterval(timer);
+    index++;
+    loadQ();
+}
+
+function skipQ() {
+    clearInterval(timer);
+    index++;
+    loadQ();
+}
+
+function resetTimer() {
+    clearInterval(timer);
+    time = 20;
+    document.getElementById("time").innerText = time;
+
+    timer = setInterval(() => {
+        time--;
+        document.getElementById("time").innerText = time;
+        if (time === 0) {
+            clearInterval(timer);
+            index++;
+            loadQ();
+        }
+    }, 1000);
+}
+
+loadQ();
+</script>
+
+</body>
+</html>
